@@ -1,0 +1,26 @@
+<idea-plugin>
+    <id>com.sportalliance.codingame-integration</id>
+    <name>CodinGame Integration</name>
+    <vendor email="dragon.ngc@gmx.de" url="http://www.sportalliance.com">Sport Alliance</vendor>
+
+    <description><![CDATA[
+    Small plugin to merge all source files of a project into a single one
+    ]]></description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <group id="CodingameIntegration.SampleMenu" text="Codingame" description="Codingame menu">
+            <add-to-group group-id="MainMenu" anchor="last"/>
+            <action id="Codingame.Integration" class="MergeSourcesAction" description="Merge sources"/>
+        </group>
+    </actions>
+</idea-plugin>
