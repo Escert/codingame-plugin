@@ -41,7 +41,7 @@ public class MergeSourcesAction extends AnAction {
 			return;
 		}
 
-		Path persistencePath = Paths.get(System.getProperty("user.home"));
+		Path persistencePath = Paths.get(project.getBasePath(), "target");
 		MergedFile mergedFile = new MergedFile(sourceFiles);
 		try {
 			mergedFile.persist(persistencePath);

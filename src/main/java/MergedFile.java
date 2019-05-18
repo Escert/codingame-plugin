@@ -23,6 +23,8 @@ public class MergedFile {
 		File persistedFile = new File(persistencePath.toFile(), "MergedFile" + suffix);
 		System.out.println("Persistence file: "+persistedFile);
 
+		persistencePath.toFile().mkdirs();
+		persistedFile.createNewFile();
 		try (FileWriter writer = new FileWriter(persistedFile, false)) {
 			for(String importStr : determineAllImports()) {
 				writer.append(importStr);
