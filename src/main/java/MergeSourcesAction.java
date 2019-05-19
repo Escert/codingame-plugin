@@ -1,6 +1,4 @@
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -8,23 +6,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jetbrains.annotations.NotNull;
-
 import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 
-public class MergeSourcesAction extends AnAction {
+public abstract class MergeSourcesAction extends AnAction {
 
-	public MergeSourcesAction() {
-		super("Merge sources");
+	public MergeSourcesAction(String text) {
+		super(text);
 	}
 
-	@Override
-	public void actionPerformed(@NotNull AnActionEvent e) {
-		Project project = e.getProject();
+	protected MergedFile collectMergedFile(Project project) {
 		File baseDir = Paths.get(project.getBasePath(), "src").toFile();
 		List<SourceFile> sourceFiles = getFilesIn(baseDir)
 				.map(this::parseSourceFile)
@@ -34,23 +26,14 @@ public class MergeSourcesAction extends AnAction {
 
 		if(sourceFiles.isEmpty()) {
 			Messages.showMessageDialog(project, "No source files found!", "Merge Sources", Messages.getErrorIcon());
-			return;
+			return null;
 		}
 		if(!allSourceFilesOfSameType(sourceFiles)) {
 			Messages.showMessageDialog(project, "Found source files of different types!", "Merge Sources", Messages.getErrorIcon());
-			return;
+			return null;
 		}
 
-		Path persistencePath = Paths.get(project.getBasePath(), "target");
-		MergedFile mergedFile = new MergedFile(sourceFiles);
-		try {
-			mergedFile.persist(persistencePath);
-		} catch (IOException ex) {
-			Messages.showMessageDialog(project, "Something went wrong while creating the merged file!" + System.lineSeparator() + ex.getMessage() + System.lineSeparator() + ExceptionUtils.getStackTrace(ex), "Merge Sources", Messages.getErrorIcon());
-			return;
-		}
-
-		Messages.showMessageDialog(project, "Sources were successfully merged", "Merge Sources", Messages.getInformationIcon());
+		return new MergedFile(sourceFiles);
 	}
 
 	private Stream<File> getFilesIn(File directory) {

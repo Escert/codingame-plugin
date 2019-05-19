@@ -1,11 +1,8 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,36 +14,29 @@ public class MergedFile {
 		this.sourceFiles = sourceFiles;
 	}
 
-	public void persist(Path persistencePath) throws IOException {
-		String suffix = sourceFiles.get(0).getFileSuffix();
+	public String createFileContent() {
+		StringJoiner content = new StringJoiner(System.lineSeparator());
 
-		File persistedFile = new File(persistencePath.toFile(), "MergedFile" + suffix);
-		System.out.println("Persistence file: "+persistedFile);
+		determineAllImports().forEach(content::add);
+		sourceFiles.stream()
+				.map(SourceFile::getContent)
+				.forEach(content::add);
 
-		persistencePath.toFile().mkdirs();
-		persistedFile.createNewFile();
-		try (FileWriter writer = new FileWriter(persistedFile, false)) {
-			for(String importStr : determineAllImports()) {
-				writer.append(importStr);
-				writer.append(System.lineSeparator());
-			}
-
-			for(SourceFile sourceFile : sourceFiles) {
-				writer.append(sourceFile.getContent());
-				writer.append(System.lineSeparator());
-			}
-		}
+		return content.toString();
 	}
 
-	private Set<String> determineAllImports() {
+	public String getFileSuffix() {
+		return sourceFiles.get(0).getFileSuffix();
+	}
+
+	private Stream<String> determineAllImports() {
 		Set<String> projectPackages = determineProjectPackages();
 		System.out.println("ProjectPackages: " + projectPackages);
 
 		return sourceFiles.stream()
 				.flatMap(sourceFile -> sourceFile.getImports().stream())
 				.distinct()
-				.filter(importStr -> !isProjectImport(importStr, projectPackages))
-				.collect(Collectors.toSet());
+				.filter(importStr -> !isProjectImport(importStr, projectPackages));
 	}
 
 	private Set<String> determineProjectPackages() {

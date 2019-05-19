@@ -18,9 +18,10 @@
     </extensions>
 
     <actions>
-        <group id="CodingameIntegration.SampleMenu" text="Codingame" description="Codingame menu">
+        <group id="CodingameIntegration.Menu" text="Codingame" description="Codingame menu">
             <add-to-group group-id="MainMenu" anchor="last"/>
-            <action id="Codingame.Integration" class="MergeSourcesAction" description="Merge sources"/>
+            <action id="Codingame.Integration.File" class="MergeSourcesToFileAction"/>
+            <action id="Codingame.Integration.Clipboard" class="MergeSourcesToClipboardAction"/>
         </group>
     </actions>
 </idea-plugin>
