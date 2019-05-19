@@ -16,7 +16,7 @@ public abstract class MergeSourcesAction extends AnAction {
 		super(text);
 	}
 
-	protected MergedFile collectMergedFile(Project project) {
+	protected Optional<MergedFile> collectMergedFile(Project project) {
 		File baseDir = Paths.get(project.getBasePath(), "src").toFile();
 		List<SourceFile> sourceFiles = getFilesIn(baseDir)
 				.map(this::parseSourceFile)
@@ -26,14 +26,14 @@ public abstract class MergeSourcesAction extends AnAction {
 
 		if(sourceFiles.isEmpty()) {
 			Messages.showMessageDialog(project, "No source files found!", "Merge Sources", Messages.getErrorIcon());
-			return null;
+			return Optional.empty();
 		}
 		if(!allSourceFilesOfSameType(sourceFiles)) {
 			Messages.showMessageDialog(project, "Found source files of different types!", "Merge Sources", Messages.getErrorIcon());
-			return null;
+			return Optional.empty();
 		}
 
-		return new MergedFile(sourceFiles);
+		return Optional.of(new MergedFile(sourceFiles));
 	}
 
 	private Stream<File> getFilesIn(File directory) {

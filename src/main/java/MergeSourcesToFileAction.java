@@ -3,6 +3,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
@@ -20,8 +21,12 @@ public class MergeSourcesToFileAction extends MergeSourcesAction {
 	@Override
 	public void actionPerformed(@NotNull AnActionEvent e) {
 		Project project = e.getProject();
-		MergedFile mergedFile = collectMergedFile(project);
+		Optional<MergedFile> mergedFileOpt = collectMergedFile(project);
+		if(!mergedFileOpt.isPresent()) {
+			return;
+		}
 
+		MergedFile mergedFile = mergedFileOpt.get();
 		Path persistencePath = Paths.get(project.getBasePath(), "target");
 		File persistedFile = new File(persistencePath.toFile(), "MergedFile" + mergedFile.getFileSuffix());
 		System.out.println("Persistence file: "+persistedFile);
